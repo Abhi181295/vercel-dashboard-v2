@@ -77,7 +77,6 @@ import { useRouter } from 'next/navigation';
   };
 }
 
-type Metric = { achieved: number; target: number; pct: number };
 type Block = { y: Metric; w: Metric; m: Metric };
 type RevenueMetrics = {
   service: Block;
