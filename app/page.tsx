@@ -77,8 +77,6 @@ import { useRouter } from 'next/navigation';
   };
 }
 
-type Block = { y: Metric; w: Metric; m: Metric };
-type RevenueMetrics = {
   service: Block;
   commerce: Block;
 };
@@ -119,7 +117,6 @@ type UserWithTargets = {
   smId?: string;
 };
 
-type Leaf = {
   id: string;
   name: string;
   role: 'AM' | 'FLAP';
@@ -156,7 +153,6 @@ type Leaf = {
   };
 };
 
-type Manager = {
   id: string;
   name: string;
   role: 'M';
@@ -193,7 +189,6 @@ type Manager = {
   };
 };
 
-type SM = {
   id: string;
   name: string;
   role: 'SM';
