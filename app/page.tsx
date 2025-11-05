@@ -75,7 +75,6 @@ import { useRouter } from 'next/navigation';
       salesTeamConv: number;
     };
   };
-}
 
   service: Block;
   commerce: Block;
@@ -226,25 +225,20 @@ type UserWithTargets = {
 
 function pct(a: number, t: number) {
   return t ? Math.round((a / t) * 100) : 0;
-}
 
 function fmt(n: number) {
   return n.toLocaleString('en-IN');
-}
 
 function fmtLakhs(n: number): string {
   const valueInLakhs = n / 100000;
   return valueInLakhs.toFixed(1);
-}
 
 function metric(a: number, t: number, isSales: boolean = false): Metric {
   if (isSales) {
     const aInLakhs = a / 100000;
     const tInLakhs = t / 100000;
     return { achieved: aInLakhs, target: tInLakhs, pct: pct(a, t) };
-  }
   return { achieved: a, target: t, pct: pct(a, t) };
-}
 
 function buildHierarchy(sms: UserWithTargets[], managers: UserWithTargets[], ams: UserWithTargets[]) {
   const smMap = new Map(sms.map(sm => [sm.id, {
@@ -261,7 +255,6 @@ function buildHierarchy(sms: UserWithTargets[], managers: UserWithTargets[], ams
         w: metric(sm.achieved?.commerce.w || 0, sm.scaledTargets?.commerce.w || sm.targets.commerce, false),
         m: metric(sm.achieved?.commerce.m || 0, sm.scaledTargets?.commerce.m || sm.targets.commerce, false),
       },
-    }
   }]));
 
   const managerMap = new Map(managers.map(manager => [manager.id, {
@@ -278,7 +271,6 @@ function buildHierarchy(sms: UserWithTargets[], managers: UserWithTargets[], ams
         w: metric(manager.achieved?.commerce.w || 0, manager.scaledTargets?.commerce.w || manager.targets.commerce, false),
         m: metric(manager.achieved?.commerce.m || 0, manager.scaledTargets?.commerce.m || manager.targets.commerce, false),
       },
-    }
   }]));
 
   // Assign managers to SMs
@@ -287,7 +279,6 @@ function buildHierarchy(sms: UserWithTargets[], managers: UserWithTargets[], ams
       const sm = smMap.get(manager.smId)!;
       const managerWithMetrics = managerMap.get(manager.id)!;
       sm.children.push(managerWithMetrics);
-    }
   });
 
   // Assign AMs to Managers or directly to SMs if no manager
@@ -308,7 +299,6 @@ function buildHierarchy(sms: UserWithTargets[], managers: UserWithTargets[], ams
             w: metric(am.achieved?.commerce.w || 0, am.scaledTargets?.commerce.w || am.targets.commerce, false),
             m: metric(am.achieved?.commerce.m || 0, am.scaledTargets?.commerce.m || am.targets.commerce, false),
           },
-        }
       });
     } else if (am.smId && smMap.has(am.smId)) {
       // AM reports directly to SM (no manager)
@@ -327,11 +317,9 @@ function buildHierarchy(sms: UserWithTargets[], managers: UserWithTargets[], ams
           metrics: {
             service: { y: metric(0, 0, true), w: metric(0, 0, true), m: metric(0, 0, true) },
             commerce: { y: metric(0, 0, false), w: metric(0, 0, false), m: metric(0, 0, false) }
-          }
         };
         managerMap.set(virtualManagerId, virtualManager);
         sm.children.push(virtualManager);
-      }
       const virtualManager = managerMap.get(virtualManagerId)!;
       virtualManager.children.push({
         ...am,
@@ -346,14 +334,11 @@ function buildHierarchy(sms: UserWithTargets[], managers: UserWithTargets[], ams
             w: metric(am.achieved?.commerce.w || 0, am.scaledTargets?.commerce.w || am.targets.commerce, false),
             m: metric(am.achieved?.commerce.m || 0, am.scaledTargets?.commerce.m || am.targets.commerce, false),
           },
-        }
       });
-    }
   });
 
   // Convert to array
   return Array.from(smMap.values());
-}
 
 // Modal Component
 function MetricsModal({ isOpen, onClose, userName, userRole, period, revType }: {
@@ -378,7 +363,6 @@ function MetricsModal({ isOpen, onClose, userName, userRole, period, revType }: 
   useEffect(() => {
     if (isOpen) {
       fetchFunnelData();
-    }
   }, [isOpen, userName, userRole]);
 
   const fetchFunnelData = async () => {
@@ -388,7 +372,6 @@ function MetricsModal({ isOpen, onClose, userName, userRole, period, revType }: 
       const response = await fetch(`/api/funnel?name=${encodeURIComponent(userName)}&role=${userRole}`);
       if (!response.ok) {
         throw new Error('Failed to fetch funnel data');
-      }
       const data = await response.json();
       setFunnelData(data);
     } catch (err) {
@@ -396,7 +379,6 @@ function MetricsModal({ isOpen, onClose, userName, userRole, period, revType }: 
       setError('Failed to load detailed metrics');
     } finally {
       setLoading(false);
-    }
   };
 
   if (!isOpen) return null;
@@ -554,7 +536,6 @@ function MetricsModal({ isOpen, onClose, userName, userRole, period, revType }: 
       </div>
     </div>
   );
-}	
 
 function DashboardPage() {
   const router = useRouter();
@@ -603,13 +584,11 @@ function DashboardPage() {
         setUserEmail(email || '');
         setUserName(name || '');
         setUserRole(role || '');
-      }
       
       setIsAuthenticated(authenticated);
       
       if (!authenticated) {
         router.push('/login');
-      }
     };
 
     setTimeout(checkAuth, 100);
@@ -627,7 +606,6 @@ function DashboardPage() {
         
         if (!response.ok) {
           throw new Error('Failed to fetch data');
-        }
         
         const { sms, managers, ams } = await response.json();
         
@@ -638,21 +616,17 @@ function DashboardPage() {
           filteredData = sms.filter((sm: UserWithTargets) => 
             sm.name.toLowerCase() === userName.toLowerCase()
           );
-        }
         
         const hierarchy = buildHierarchy(filteredData, managers, ams);
         setData(hierarchy);
         
         if (hierarchy.length > 0) {
           setSelectedSM(hierarchy[0]);
-        }
       } catch (err) {
         console.error('Error loading data:', err);
         setError('Failed to load data from Google Sheets. Please check your connection and try again.');
       } finally {
         setLoading(false);
-      }
-    }
 
     loadData();
   }, [isAuthenticated, userRole, userName]);
@@ -678,7 +652,6 @@ function DashboardPage() {
       return [selectedManager];
     } else if (selectedSM) {
       return selectedSM.children || [];
-    }
     return [];
   }, [selectedSM, selectedManager]);
 
@@ -687,7 +660,6 @@ function DashboardPage() {
       return selectedManager.children || [];
     } else if (selectedSM) {
       return (selectedSM.children || []).flatMap((m: Manager) => m.children || []);
-    }
     return [];
   }, [selectedSM, selectedManager]);
 
@@ -701,7 +673,6 @@ function DashboardPage() {
     if (!managerId) {
       setSelectedManager(null);
       return;
-    }
     
     const manager = selectedSM?.children?.find((m: Manager) => m.id === managerId) || null;
     setSelectedManager(manager);
@@ -724,11 +695,9 @@ function DashboardPage() {
         <div className="loading-full">Checking authentication...</div>
       </div>
     );
-  }
 
   if (!isAuthenticated) {
     return null;
-  }
 
   if (loading) {
     return (
@@ -772,7 +741,6 @@ function DashboardPage() {
         </section>
       </div>
     );
-  }
 
   if (error) {
     return (
@@ -826,7 +794,6 @@ function DashboardPage() {
         </section>
       </div>
     );
-  }
 
   return (
     <div className="crm-root">
@@ -1143,7 +1110,6 @@ function DashboardPage() {
           height: 100vh;
           font-size: 18px;
           color: #64748b;
-        }
 
         .loading, .error, .no-data {
           display: flex;
@@ -1154,57 +1120,47 @@ function DashboardPage() {
           font-size: 18px;
           color: var(--muted);
           text-align: center;
-        }
         
         .error {
           color: #ef4444;
-        }
         
         .error h2 {
           margin: 0 0 8px 0;
           color: #dc2626;
-        }
         
         .error p {
           margin: 0 0 16px 0;
           max-width: 400px;
           line-height: 1.5;
-        }
         
         .no-data h3 {
           margin: 0 0 8px 0;
           color: var(--text);
-        }
         
         .no-data p {
           margin: 0;
           color: var(--muted);
-        }
 
         .user-info {
           margin-top: auto;
           padding: 16px;
           border-top: 1px solid var(--line);
           text-align: center;
-        }
 
         .user-name {
           font-weight: 600;
           color: var(--text);
-        }
 
         .user-role {
           font-size: 12px;
           color: var(--muted);
           margin-top: 4px;
-        }
 
         .user-email {
           font-size: 11px;
           color: var(--muted);
           margin-top: 2px;
           margin-bottom: 12px;
-        }
 
         .logout-btn {
           width: 100%;
@@ -1215,11 +1171,9 @@ function DashboardPage() {
           border-radius: 6px;
           cursor: pointer;
           font-size: 14px;
-        }
 
         .logout-btn:hover {
           background: #dc2626;
-        }
 
         .user-welcome {
           background: var(--card);
@@ -1227,30 +1181,25 @@ function DashboardPage() {
           border-radius: 10px;
           padding: 16px;
           margin-bottom: 16px;
-        }
 
         .user-welcome h3 {
           margin: 0 0 4px 0;
           color: var(--text);
           font-size: 16px;
-        }
 
         .user-welcome p {
           margin: 0;
           color: var(--muted);
           font-size: 14px;
-        }
       `}</style>
       <style jsx global>{CSS}</style>
     </div>
   );
-}
 
 function Metrics({ m, isSales = false, onClick }: { m: Metric; isSales?: boolean; onClick?: () => void }) {
   const formatValue = (value: number) => {
     if (isSales) {
       return fmtLakhs(value * 100000);
-    }
     return fmt(value);
   };
 
@@ -1269,7 +1218,6 @@ function Metrics({ m, isSales = false, onClick }: { m: Metric; isSales?: boolean
       </div>
     </div>
   );
-}
 
 /* =============================== CSS ====================================== */
 
@@ -1284,7 +1232,6 @@ const CSS = `
   --good:#16a34a;
   --warn:#f59e0b;
   --low:#dc2626;
-}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -1391,7 +1338,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
   align-items: center;
   z-index: 1000;
   padding: 20px;
-}
 
 .modal-content {
   background: white;
@@ -1401,7 +1347,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
 
 .modal-header {
   display: flex;
@@ -1409,13 +1354,11 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid var(--line);
-}
 
 .modal-header h2 {
   margin: 0;
   color: #111827;
   font-size: 20px;
-}
 
 .modal-close {
   background: none;
@@ -1425,30 +1368,25 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
   color: #6b7280;
   padding: 4px;
   border-radius: 4px;
-}
 
 .modal-close:hover {
   background: #f3f4f6;
   color: #111827;
-}
 
 .modal-subheader {
   padding: 16px 24px;
   background: #f8fafc;
   border-bottom: 1px solid var(--line);
-}
 
 .user-info-modal {
   font-size: 14px;
   color: #6b7280;
-}
 
 .period-selector {
   display: flex;
   gap: 8px;
   padding: 20px 24px;
   border-bottom: 1px solid var(--line);
-}
 
 .period-btn {
   background: #f3f4f6;
@@ -1458,76 +1396,62 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;
-}
 
 .period-btn.active {
   background: #111827;
   color: white;
   border-color: #111827;
-}
 
 .period-btn:hover:not(.active) {
   background: #e5e7eb;
-}
 
 .modal-section {
   padding: 20px 24px;
   border-bottom: 1px solid var(--line);
-}
 
 .modal-section:last-of-type {
   border-bottom: none;
-}
 
 .modal-section h3 {
   margin: 0 0 16px 0;
   color: #111827;
   font-size: 16px;
-}
 
 .metrics-table {
   overflow-x: auto;
-}
 
 .metrics-table table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-}
 
 .metrics-table th,
 .metrics-table td {
   padding: 12px;
   text-align: center;
   border: 1px solid var(--line);
-}
 
 .metrics-table th {
   background: #f8fafc;
   font-weight: 600;
   color: #374151;
-}
 
 .metrics-table td {
   color: #6b7280;
-}
 
 .modal-actions {
   padding: 20px 24px;
   border-top: 1px solid var(--line);
   display: flex;
   justify-content: flex-end;
-}
 
 .modal-loading, .modal-error {
   padding: 40px 24px;
   text-align: center;
-}
 
 .modal-loading .loading, .modal-error .error {
   height: auto;
   margin: 0;
-}
 `;
 
 export default DashboardPage;
