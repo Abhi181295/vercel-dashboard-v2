@@ -1537,3 +1537,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
 `;
 
 export default DashboardPage;
+
+// --- Type definitions ---
+ type Metric = { achieved: number; target: number; pct: number }; type Block = { y: Metric; w: Metric; m: Metric }; type RevenueMetrics = { service: Block; commerce: Block }; type Leaf = { id: string; name: string; role: 'AM' | 'FLAP'; metrics: RevenueMetrics; managerId: string; smId: string; }; type Manager = { id: string; name: string; role: 'M'; metrics: RevenueMetrics; children: Leaf[]; smId: string; }; type SM = { id: string; name: string; role: 'SM'; metrics: RevenueMetrics; children: Manager[]; }; type Person = SM | Manager | Leaf;
