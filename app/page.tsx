@@ -572,7 +572,7 @@ function DashboardPage() {
   const [selectedSM, setSelectedSM] = useState<SM | null>(null);
   const [selectedManager, setSelectedManager] = useState<Manager | null>(null);
   const [revType, setRevType] = useState<'service' | 'commerce'>('service');
-  const [data, setData] = useState<SM[]>([]);
+  const [data, setData] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
